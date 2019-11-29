@@ -1,0 +1,39 @@
+# Enable squid repo
+echo '
+[squid]
+name=Squid repo for CentOS Linux - 7 
+#IL mirror
+baseurl=http://www1.ngtech.co.il/repo/centos/$releasever/beta/$basearch/
+failovermethod=priority
+enabled=1
+gpgcheck=0
+' >> /etc/yum.repos.d/squid.repo
+
+# Install squid itself, helpers (security_file_certgen and basic_ncsa_auth), and httpd tools (htpasswd)
+yum -y install squid squid-helpers httpd-tools
+
+# Generate a pxuser user with pass pxpass for basic authentication
+htpasswd -b -c /etc/squid/passwd pxuser pxpass
+
+# Copy squid-*.conf files
+cp squid-auth.conf squid-noauth.conf /etc/squid
+
+USECASE 1: No authentication, HTTP@3128
+systemctl stop squid
+rm /etc/squid/squid.conf
+ln -s /etc/squid/squid-noauth.conf /etc/squid/squid.conf
+systemctl start squid
+
+USECASE 2: basic authentication (pxuser:pxpass), HTTP@3128
+systemctl stop squid
+rm /etc/squid/squid.conf
+ln -s /etc/squid/squid-auth.conf /etc/squid/squid.conf
+systemctl start squid
+
+
+
+
+
+
+
+
