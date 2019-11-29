@@ -1,0 +1,1 @@
+<h4>This contains how to congure NGINX or Squid for any REST based APIS</h4>
